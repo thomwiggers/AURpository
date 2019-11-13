@@ -22,8 +22,16 @@ def getyesno(prompt: str, default: Optional[Literal['y', 'n']] = None) -> bool:
         continue
 
 
+def move(src, dest):
+    filename = os.path.basename(src)
+    if os.path.exists(os.path.join(dest, filename)):
+        os.remove(os.path.join(dest, filename))
+    shutil.move(src, dest)
+
+
 def run(command: str,
         capture_output: bool = True,
+        check: bool = True,
         cwd: Optional[str] = None) -> (
         subprocess.CompletedProcess):
 
@@ -41,12 +49,17 @@ def run(command: str,
 
 
 def clone_repo(package: str) -> None:
-    if os.path.exists(os.path.join('repos', package)):
+    repodir = os.path.join('repos', package)
+    if os.path.exists(repodir):
         print(f"{package} already cloned")
         return
     run(f"git clone https://aur.archlinux.org/{package}.git",
         cwd='repos')
     print(f"Cloned {package}")
+    for filename in glob.glob(os.path.join(repodir, '*')):
+        run(f"diff --unified  /dev/null {filename}",
+            capture_output=False)
+    assert getyesno("Accept this package?")
 
 
 def needs_update(package: str) -> bool:
@@ -58,11 +71,11 @@ def needs_update(package: str) -> bool:
     path = os.path.join('repos', package)
     run("git fetch", cwd=path)
     if 'up to date' in run("git status", cwd=path).stdout:
-        return True
+        return False
 
     # Generate diff
     run("git diff master origin/master",
-        capture_output=False, cwd=path)
+        capture_output=False, check=False, cwd=path)
     assert getyesno("Diff approved?")
     run("git reset --hard origin/master", cwd=path)
     return True
@@ -70,7 +83,7 @@ def needs_update(package: str) -> bool:
 
 def build_package(package: str) -> List[str]:
     path = os.path.join('repos', package)
-    run("makepkg --syncdeps --check --sign",
+    run("makepkg --force --syncdeps --check --sign",
         capture_output=False,
         cwd=path)
     pkgs = glob.glob(os.path.join("repos", package, f"{package}-*.pkg.tar.xz"))
@@ -79,9 +92,9 @@ def build_package(package: str) -> List[str]:
     filenames = []
     for pkg in pkgs:
         filenames.append(os.path.basename(pkg))
-        shutil.move(pkg, "packages")
+        move(pkg, "packages")
     for sig in sigs:
-        shutil.move(sig, "packages")
+        move(sig, "packages")
     return filenames
 
 
@@ -102,12 +115,15 @@ def main():
     with open('packages.txt', 'r') as f:
         packages = map(str.strip, f.readlines())
     for package in packages:
+        print(f"Processing {package}")
         clone_repo(package)
         build = needs_update(package)
         if build:
             new_packages = build_package(package)
             for pkg in new_packages:
                 add_to_repo(pkg)
+
+    sync_to_server()
 
 
 if __name__ == "__main__":
