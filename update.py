@@ -40,7 +40,7 @@ def run(command: str,
             shlex.split(command),
             text=True,
             capture_output=capture_output,
-            check=True,
+            check=check,
             cwd=cwd)
     except subprocess.CalledProcessError as e:
         print(f"Stdout = {e.stdout}")
@@ -76,7 +76,7 @@ def needs_update(package: str) -> bool:
 
     # Generate diff
     run("git diff master origin/master",
-        capture_output=False, check=False, cwd=path)
+        capture_output=False, cwd=path)
     assert getyesno("Diff approved?")
     run("git reset --hard origin/master", cwd=path)
     return True
