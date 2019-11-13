@@ -120,9 +120,12 @@ def main():
         clone_repo(package)
         build = needs_update(package)
         if build:
-            new_packages = build_package(package)
-            for pkg in new_packages:
-                add_to_repo(pkg)
+            try:
+                new_packages = build_package(package)
+                for pkg in new_packages:
+                    add_to_repo(pkg)
+            except Exception:
+                pass
 
     sync_to_server()
 
