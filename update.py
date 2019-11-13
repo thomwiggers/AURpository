@@ -58,6 +58,7 @@ def clone_repo(package: str) -> None:
     print(f"Cloned {package}")
     for filename in glob.glob(os.path.join(repodir, '*')):
         run(f"diff --unified  /dev/null {filename}",
+            check=False,
             capture_output=False)
     assert getyesno("Accept this package?")
 
