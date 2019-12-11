@@ -11,4 +11,4 @@ if [ "${#packages[@]}" != "0" ]; then
     $dir/aursync "${packages[@]}" --no-ver-shallow
 fi
 
-rsync --delete --progress --copy-links --recursive $root/ archeron:/var/www/arch.rded.nl/
+rsync --delete --progress --copy-links --recursive $root/ archeron.rded.nl:/var/www/arch.rded.nl/

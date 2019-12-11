@@ -3,3 +3,5 @@
 dir=$(realpath "${BASH_SOURCE%/*}/packages")
 
 aur sync --database aurpkgs --root $dir --sign --chroot $@
+
+rsync --delete --progress --copy-links --recursive $dir/ archeron.rded.nl:/var/www/arch.rded.nl/
