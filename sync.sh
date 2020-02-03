@@ -1,14 +1,15 @@
 #!/bin/bash
 
 set -e
+
 dir=$(realpath "${BASH_SOURCE%/*}")
 root=$(realpath "${BASH_SOURCE%/*}/packages")
-aur sync --database aurpkgs --root $root --sign --pkgver --upgrade
+$dir/aursync --pkgver --upgrade
 
-mapfile -t packages < <(aur vercmp-devel --database aurpkgs --root $root | cut -d: -f1)
+mapfile -t packages < <($dir/vercmp-devel | cut -d: -f1)
 
 if [ "${#packages[@]}" != "0" ]; then
-    $dir/aursync "${packages[@]}" --no-ver-shallow
+    $dir/aursync --no-ver-shallow "${packages[@]}"
 fi
 
-rsync --delete --progress --copy-links --recursive $root/ archeron.rded.nl:/var/www/arch.rded.nl/
+#rsync --delete --progress --copy-links --recursive $root/ archeron.rded.nl:/var/www/arch.rded.nl/

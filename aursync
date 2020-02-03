@@ -1,7 +1,11 @@
 #!/bin/bash
 
-dir=$(realpath "${BASH_SOURCE%/*}/packages")
+set -e
 
-aur sync --database aurpkgs --root $dir --sign --chroot $@
+cwd="$(realpath ${BASH_SOURCE%/*})"
+packages=$(realpath "$cwd/packages")
 
-rsync --delete --progress --copy-links --recursive $dir/ archeron.rded.nl:/var/www/arch.rded.nl/
+aur sync --pacman-conf $cwd/pacman.conf --sign --chroot $@
+
+echo "Synchronizing packages"
+rsync --delete --info=progress2 --copy-links --recursive $packages/ archeron.rded.nl:/var/www/arch.rded.nl/
