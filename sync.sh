@@ -10,6 +10,8 @@ mapfile -t packages < <($dir/vercmp-devel | cut -d: -f1)
 
 if [ "${#packages[@]}" != "0" ]; then
     $dir/aursync --no-ver-shallow "${packages[@]}"
+else
+    echo "All vcs packages up to date!"
 fi
 
 #rsync --delete --progress --copy-links --recursive $root/ archeron.rded.nl:/var/www/arch.rded.nl/
