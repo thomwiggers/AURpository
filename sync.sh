@@ -2,6 +2,8 @@
 
 set -e
 
+rm -f /home/thom/.cache/aurutils/sync/shadow-tech/info.yml
+
 dir=$(realpath "${BASH_SOURCE%/*}")
 root=$(realpath "${BASH_SOURCE%/*}/packages")
 $dir/aursync --pkgver --upgrade
@@ -14,4 +16,3 @@ else
     echo "All vcs packages up to date!"
 fi
 
-#rsync --delete --progress --copy-links --recursive $root/ archeron.rded.nl:/var/www/arch.rded.nl/
