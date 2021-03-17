@@ -6,7 +6,7 @@ rm -f /home/thom/.cache/aurutils/sync/shadow-tech/info.yml
 
 dir=$(realpath "${BASH_SOURCE%/*}")
 root=$(realpath "${BASH_SOURCE%/*}/packages")
-$dir/aursync --pkgver --upgrade
+$dir/aursync --pkgver --upgrade --ignore=ruby-kramdown-rfc2629 --ignore mongodb
 
 mapfile -t packages < <($dir/vercmp-devel | cut -d: -f1)
 
@@ -16,3 +16,4 @@ else
     echo "All vcs packages up to date!"
 fi
 
+checkrebuild -i aurpkgs

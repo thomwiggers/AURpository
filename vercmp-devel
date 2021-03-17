@@ -19,7 +19,7 @@ trap 'rm -rf "$db_tmp"' EXIT
 
 # Retrieve a list of the local repository contents. The repository
 # can be specified with the usual aur-repo arguments.
-aur repo --pacman-conf $cwd/pacman.conf --list "$@" >"$db_tmp"
+aur repo --config $cwd/pacman.conf --list "$@" >"$db_tmp"
 
 # Find VCS packages that are outdated according to aur-srcver.
 # This checks out the latest revision for existing source directories,
