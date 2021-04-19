@@ -17,3 +17,8 @@ else
 fi
 
 checkrebuild -i aurpkgs
+
+echo -n "Currently packaged Shadow version:"
+pacman -Si shadow-tech | grep Version | cut  -d: -f 2
+echo -n "Latest shadow version: "
+curl "https://storage.googleapis.com/shadow-update/launcher/prod/linux/ubuntu_18.04/latest-linux.yml" 2> /dev/null | yq '.version'
