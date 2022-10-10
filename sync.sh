@@ -1,14 +1,17 @@
 #!/bin/bash
 
+#export AUR_SYNC_USE_NINJA=1
+
 set -e
 
 rm -f /home/thom/.cache/aurutils/sync/shadow-tech/info.yml
+rm -rf /home/thom/.cache/aurutils/sync/cloudflared/src/
 
 dir=$(realpath "${BASH_SOURCE%/*}")
 root=$(realpath "${BASH_SOURCE%/*}/packages")
-$dir/aursync --pkgver --upgrade --ignore=ruby-kramdown-rfc2629 --ignore mongodb
+$dir/aursync --pkgver --upgrade --ignore mongodb $@
 
-mapfile -t packages < <($dir/vercmp-devel | cut -d: -f1)
+mapfile -t packages < <($dir/vercmp-devel | cut -d' ' -f1)
 
 if [ "${#packages[@]}" != "0" ]; then
     $dir/aursync --no-ver-argv "${packages[@]}"

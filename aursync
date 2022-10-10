@@ -5,7 +5,7 @@ set -e
 cwd="$(realpath ${BASH_SOURCE%/*})"
 packages=$(realpath "$cwd/packages")
 
-aur sync --remove --config $cwd/pacman.conf --sign --chroot $@
+aur sync --remove --pacman-conf $cwd/pacman.conf --sign --chroot $@
 
 echo "Removing old packages"
 paccache -r -k1 -c packages
